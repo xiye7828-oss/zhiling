@@ -1,0 +1,137 @@
+/* --- 核心视觉系统 --- */
+:root {
+    --bg-dark: #09090b;
+    --bg-panel: #18181b;
+    --text-white: #ffffff;
+    --text-gray: #a1a1aa;
+    --color-green: #22c55e;
+    --color-yellow: #eab308;
+    --color-red: #ef4444;
+    --color-blue: #3b82f6;
+    --font-stack: "Impact", "Arial Black", "Heiti SC", system-ui, sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: var(--font-stack); user-select: none; }
+body { background-color: var(--bg-dark); color: var(--text-white); overflow: hidden; height: 100vh; width: 100vw; }
+
+.hidden { display: none !important; }
+.flex-center { display: flex; justify-content: center; align-items: center; }
+.full-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+.icon { width: 20px; height: 20px; stroke-width: 2.5; stroke: currentColor; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+/* --- 登录与选择页 --- */
+.login-card { background: rgba(24,24,27,0.8); backdrop-filter: blur(12px); border: 1px solid #333; padding: 40px; border-radius: 24px; width: 90%; max-width: 400px; text-align: center; }
+.room-input { width: 100%; background: #000; border: 1px solid #333; color: white; padding: 16px; font-size: 24px; text-align: center; font-weight: bold; border-radius: 12px; outline: none; margin-top: 10px; font-family: ui-sans-serif, system-ui; }
+.btn-main { width: 100%; background: white; color: black; font-weight: 900; font-size: 18px; padding: 16px; border-radius: 12px; border: none; margin-top: 16px; cursor: pointer; display: flex; justify-content: center; gap: 8px; align-items: center; }
+
+.role-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; max-width: 800px; padding: 20px; }
+.role-card { background: var(--bg-panel); border: 2px solid #333; height: 260px; border-radius: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+.role-card:hover { border-color: var(--color-green); background: #222; }
+
+/* --- 运营控制台 --- */
+.ops-layout { display: flex; flex-direction: column; height: 100vh; }
+.ops-header { height: 50px; background: #111; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; font-size: 12px; color: #666; font-family: ui-sans-serif, system-ui; }
+
+.save-status { font-size: 10px; padding: 4px 8px; border-radius: 4px; background: #222; color: #666; transition: 0.3s; }
+.save-status.saved { color: var(--color-green); }
+.save-status.unsaved { color: var(--color-yellow); }
+
+.grid-container { 
+    flex: 1; padding: 10px; display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); 
+    grid-auto-rows: 180px; 
+    gap: 10px; overflow-y: auto; 
+}
+
+.deck-btn { position: relative; border: 4px solid var(--bg-dark); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; transition: 0.1s; height: 100%; }
+.deck-btn:active { transform: scale(0.98); }
+
+.bg-red { background-color: var(--color-red); }
+.bg-yellow { background-color: #ca8a04; }
+.bg-green { background-color: #059669; }
+.bg-blue { background-color: var(--color-blue); }
+
+.deck-title-input { 
+    position: absolute; top: 10px; left: 10px; 
+    background: rgba(0,0,0,0.3); border: none; color: white; 
+    padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; width: 80px; 
+    backdrop-filter: blur(4px); outline: none; z-index: 2; font-family: ui-sans-serif, system-ui;
+}
+
+.deck-main-input { 
+    width: 100%; flex: 1; background: transparent; border: none; outline: none; 
+    color: white; font-size: 26px; font-weight: 900; text-align: center; 
+    padding: 0 10px; line-height: 100px;
+    text-transform: uppercase;
+}
+
+.char-counter {
+    position: absolute; bottom: 45px; right: 10px;
+    font-size: 10px; font-family: ui-sans-serif; color: rgba(255,255,255,0.6);
+    pointer-events: none;
+}
+
+.deck-send { height: 40px; background: rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; font-weight: 900; text-transform: uppercase; cursor: pointer; backdrop-filter: blur(4px); font-size: 14px; gap: 5px; z-index: 1; letter-spacing: 1px; }
+.deck-send:hover { background: rgba(0,0,0,0.4); }
+
+.deck-tools { position: absolute; top: 10px; right: 10px; display: flex; gap: 4px; z-index: 2; }
+.tool-icon { width: 24px; height: 24px; background: rgba(0,0,0,0.5); border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; }
+.tool-icon:hover { background: black; }
+.tool-delete:hover { background: #ef4444; }
+
+.action-bar { height: 70px; background: #18181b; border-top: 1px solid #333; display: flex; align-items: center; justify-content: center; gap: 15px; }
+.btn-action { background: #333; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; font-family: ui-sans-serif; }
+.btn-action:hover { background: #444; }
+.btn-add { background: var(--color-green); color: black; }
+
+/* --- 主播端 (字号升级) --- */
+.anchor-view { background: black; height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; transition: all 0.3s; }
+
+.anchor-text { 
+    font-weight: 900; 
+    color: var(--color-yellow); 
+    text-align: center; 
+    line-height: 1.1; /* 允许稍微紧凑的行高 */
+    white-space: pre-wrap; /* 允许自动换行 */
+    text-shadow: 0 0 30px rgba(234, 179, 8, 0.5);
+    width: 100%;
+    padding: 0 20px;
+    word-break: break-all; /* 防止长英文或数字不换行 */
+    
+    /* 默认模式 (5-10个字)
+       原先是 11vw，现在升级到 14vw。
+       如果10个字一行放不下，它会自动变成两行，保证字足够大。
+    */
+    font-size: 14vw; 
+}
+
+/* 1-4个字：巨无霸模式 (从28vw 升级回 33vw) */
+.anchor-text.short-text { font-size: 33vw; line-height: 1; }
+
+/* --- 悬浮条模式 --- */
+.mini-mode { background: rgba(0,0,0,0.95); border-bottom: 2px solid #333; align-items: center; }
+.mini-mode .anchor-text { 
+    padding: 0 20px; 
+    white-space: nowrap; /* 悬浮条必须单行 */
+    /* 悬浮条字号算法：高度的90% 或者 宽度的25% (加大) */
+    font-size: min(25vw, 90vh); 
+    line-height: 100vh;
+}
+.mini-mode #anchor-standby { transform: scale(0.5); flex-direction: row; gap: 10px; }
+.mini-mode .anchor-info { display: none; }
+
+.mode-toggle { position: absolute; top: 10px; right: 10px; z-index: 50; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; backdrop-filter: blur(4px); font-family: ui-sans-serif; }
+.mode-toggle:hover { background: rgba(255,255,255,0.4); }
+
+.flash { animation: flash 0.6s ease-out; }
+@keyframes flash { 0% { box-shadow: inset 0 0 0 0 transparent; } 50% { box-shadow: inset 0 0 50px 20px var(--color-yellow); } }
+.mini-mode .flash { animation: border-flash 0.6s ease-out; box-shadow: none; }
+@keyframes border-flash { 0% { border-bottom-color: transparent; } 50% { border-bottom-color: var(--color-yellow); background: rgba(234, 179, 8, 0.2); } 100% { border-bottom-color: transparent; } }
+
+/* 弹窗 */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 99; backdrop-filter: blur(5px); }
+.modal { background: #18181b; padding: 30px; border-radius: 20px; max-width: 320px; width: 100%; text-align: center; position: relative; border: 1px solid #333; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); font-family: ui-sans-serif; }
+.modal-btns { display: flex; gap: 10px; margin-top: 20px; }
+.modal-btn { flex: 1; padding: 12px; border-radius: 8px; font-weight: bold; border: none; cursor: pointer; }
+.btn-cancel { background: #333; color: #ccc; }
+.btn-confirm { background: var(--color-red); color: white; }

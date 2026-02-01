@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iron Compass | 军事指挥系统</title>
+    <style>
+        /* --- 核心视觉系统 --- */
+        :root {
+            --bg-dark: #09090b;
+            --bg-panel: #18181b;
+            --text-white: #ffffff;
+            --text-gray: #a1a1aa;
+            --color-green: #22c55e;
+            --color-yellow: #eab308;
+            --color-red: #ef4444;
+            --color-blue: #3b82f6;
+            --font-stack: "Impact", "Arial Black", "Heiti SC", system-ui, sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: var(--font-stack); user-select: none; }
+        body { background-color: var(--bg-dark); color: var(--text-white); overflow: hidden; height: 100vh; width: 100vw; }
+
+        .hidden { display: none !important; }
+        .flex-center { display: flex; justify-content: center; align-items: center; }
+        .full-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; }
+        .icon { width: 20px; height: 20px; stroke-width: 2.5; stroke: currentColor; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+        /* --- 登录与选择页 --- */
+        .login-card {
+            background: rgba(24,24,27,0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            padding: 50px;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(34, 197, 94, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(34, 197, 94, 0.1), transparent);
+            animation: scan 3s infinite;
+        }
+        @keyframes scan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        .login-card h1 {
+            font-size: 42px;
+            font-weight: 900;
+            margin-bottom: 10px;
+            font-style: italic;
+            color: var(--text-white);
+            text-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+            letter-spacing: 2px;
+        }
+        .login-card p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            margin-bottom: 30px;
+            font-family: ui-sans-serif, system-ui;
+        }
+        .room-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid rgba(34, 197, 94, 0.3);
+            color: var(--text-white);
+            padding: 20px;
+            font-size: 28px;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 16px;
+            outline: none;
+            margin-top: 10px;
+            font-family: ui-sans-serif, system-ui;
+            transition: all 0.3s ease;
+        }
+        .room-input:focus {
+            border-color: var(--color-green);
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+        }
+        .btn-main {
+            width: 100%;
+            background: linear-gradient(135deg, var(--color-green), #16a34a);
+            color: black;
+            font-weight: 900;
+            font-size: 20px;
+            padding: 20px;
+            border-radius: 16px;
+            border: none;
+            margin-top: 24px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            align-items: center;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-main:hover {
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
+        }
+        .btn-main:active {
+            transform: scale(0.98);
+        }
+        .btn-main::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shine 2s infinite;
+        }
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* --- 选择页 --- */
+        #view-landing {
+            background: radial-gradient(circle at center, rgba(24, 24, 27, 0.5) 0%, var(--bg-dark) 100%);
+        }
+        #view-landing h2 {
+            font-size: 40px;
+            font-weight: 900;
+            margin-bottom: 60px;
+            color: var(--text-white);
+            text-shadow: 0 0 15px rgba(234, 179, 8, 0.5);
+            letter-spacing: 3px;
+        }
+        .role-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            width: 100%;
+            max-width: 900px;
+            padding: 20px;
+        }
+        .role-card {
+            background: rgba(24, 24, 27, 0.8);
+            border: 2px solid rgba(34, 197, 94, 0.3);
+            height: 300px;
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .role-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent, rgba(34, 197, 94, 0.05), transparent);
+        }
+        .role-card:hover {
+            border-color: var(--color-green);
+            background: rgba(24, 24, 27, 0.9);
+            box-shadow: 0 0 30px rgba(34, 197, 94, 0.3);
+            transform: translateY(-5px);
+        }
+        .role-card:active {
+            transform: scale(0.98) translateY(-5px);
+        }
+        .role-card svg {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 10px currentColor);
+        }
+        .role-card h3 {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--text-white);
+            text-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+        }
+
+        /* --- 运营控制台 --- */
+        .ops-layout {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: var(--bg-dark);
+        }
+        .ops-header {
+            height: 60px;
+            background: rgba(17, 17, 17, 0.8);
+            border-bottom: 1px solid rgba(34, 197, 94, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            font-family: ui-sans-serif, system-ui;
+            position: relative;
+        }
+        .ops-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--color-green), var(--color-blue), var(--color-green));
+            animation: border-shift 5s infinite;
+        }
+        @keyframes border-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .ops-header > div:first-child {
+            cursor: pointer;
+            color: var(--color-yellow);
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+        .ops-header > div:first-child:hover {
+            color: var(--color-green);
+            text-shadow: 0 0 5px var(--color-green);
+        }
+        .ops-header > div:nth-child(2) {
+            font-family: monospace;
+            font-size: 16px;
+            color: var(--text-white);
+            text-shadow: 0 0 5px rgba(34, 197, 94, 0.5);
+        }
+        .save-status {
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            background: rgba(24, 24, 27, 0.8);
+            color: rgba(255, 255, 255, 0.6);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+        .save-status.saved {
+            color: var(--color-green);
+            border-color: var(--color-green);
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+        }
+        .save-status.unsaved {
+            color: var(--color-yellow);
+            border-color: var(--color-yellow);
+            box-shadow: 0 0 10px rgba(234, 179, 8, 0.3);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 10px rgba(234, 179, 8, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(234, 179, 8, 0.6); }
+            100% { box-shadow: 0 0 10px rgba(234, 179, 8, 0.3); }
+        }
+
+        .grid-container {
+            flex: 1;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-auto-rows: 200px;
+            gap: 20px;
+            overflow-y: auto;
+            background: rgba(17, 17, 17, 0.3);
+        }
+        .grid-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .grid-container::-webkit-scrollbar-track {
+            background: rgba(24, 24, 27, 0.5);
+            border-radius: 4px;
+        }
+        .grid-container::-webkit-scrollbar-thumb {
+            background: rgba(34, 197, 94, 0.5);
+            border-radius: 4px;
+        }
+        .grid-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(34, 197, 94, 0.8);
+        }
+
+        .deck-btn {
+            position: relative;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            height: 100%;
+            background: rgba(24, 24, 27, 0.8);
+            backdrop-filter: blur(10px);
+        }
+        .deck-btn:hover {
+            border-color: var(--color-green);
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
+            transform: translateY(-2px);
+        }
+        .deck-btn:active {
+            transform: scale(0.98) translateY(-2px);
+        }
+        .deck-btn.bg-red {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.1));
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+        .deck-btn.bg-red:hover {
+            border-color: var(--color-red);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+        }
+        .deck-btn.bg-yellow {
+            background: linear-gradient(135deg, rgba(234, 179, 8, 0.2), rgba(202, 138, 4, 0.1));
+            border-color: rgba(234, 179, 8, 0.3);
+        }
+        .deck-btn.bg-yellow:hover {
+            border-color: var(--color-yellow);
+            box-shadow: 0 0 20px rgba(234, 179, 8, 0.3);
+        }
+        .deck-btn.bg-green {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(22, 163, 74, 0.1));
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+        .deck-btn.bg-green:hover {
+            border-color: var(--color-green);
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+        }
+        .deck-btn.bg-blue {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.1));
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+        .deck-btn.bg-blue:hover {
+            border-color: var(--color-blue);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .deck-title-input {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            width: 90px;
+            backdrop-filter: blur(4px);
+            outline: none;
+            z-index: 2;
+            font-family: ui-sans-serif, system-ui;
+            transition: all 0.3s ease;
+        }
+        .deck-title-input:focus {
+            border-color: var(--color-green);
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+        }
+        .deck-main-input {
+            width: 100%;
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: white;
+            font-size: 28px;
+            font-weight: 900;
+            text-align: center;
+            padding: 0 15px;
+            line-height: 120px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+        .deck-main-input:focus {
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        .char-counter {
+            position: absolute;
+            bottom: 55px;
+            right: 15px;
+            font-size: 12px;
+            font-family: ui-sans-serif;
+            color: rgba(255, 255, 255, 0.6);
+            pointer-events: none;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .deck-send {
+            height: 50px;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            text-transform: uppercase;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+            font-size: 14px;
+            gap: 8px;
+            z-index: 1;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .deck-send:hover {
+            background: rgba(0, 0, 0, 0.6);
+            border-top-color: var(--color-green);
+        }
+        .deck-tools {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 6px;
+            z-index: 2;
+        }
+        .tool-icon {
+            width: 28px;
+            height: 28px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .tool-icon:hover {
+            background: rgba(0, 0, 0, 0.8);
+            border-color: var(--color-green);
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+        }
+        .tool-delete:hover {
+            background: rgba(239, 68, 68, 0.8);
+            border-color: var(--color-red);
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+        }
+
+        .action-bar {
+            height: 80px;
+            background: rgba(24, 24, 27, 0.8);
+            border-top: 1px solid rgba(34, 197, 94, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            padding: 0 20px;
+        }
+        .btn-action {
+            background: rgba(24, 24, 27, 0.8);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: ui-sans-serif;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .btn-action:hover {
+            background: rgba(24, 24, 27, 0.9);
+            border-color: var(--color-green);
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
+            transform: translateY(-2px);
+        }
+        .btn-action:active {
+            transform: scale(0.98) translateY(-2px);
+        }
+        .btn-add {
+            background: linear-gradient(135deg, var(--color-green), #16a34a);
+            color: black;
+            border-color: var(--color-green);
+        }
+        .btn-add:hover {
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+        }
+
+        /* --- 主播端 --- */
+        .anchor-view {
+            background: black;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .anchor-text {
+            font-weight: 900;
+            color: var(--color-yellow);
+            text-align: center;
+            line-height: 1.1;
+            white-space: pre-wrap;
+            text-shadow: 0 0 30px rgba(234, 179, 8, 0.8), 0 0 60px rgba(234, 179, 8, 0.5);
+            width: 100%;
+            padding: 0 40px;
+            word-break: break-all;
+            font-size: 14vw;
+            letter-spacing: 2px;
+        }
+        .anchor-text.short-text {
+            font-size: 33vw;
+            line-height: 1;
+        }
+        .mini-mode {
+            background: rgba(0, 0, 0, 0.95);
+            align-items: center;
+            height: 100px;
+        }
+        .mini-mode .anchor-text {
+            padding: 0 40px;
+            white-space: nowrap;
+            font-size: 60px;
+            line-height: 100px;
+        }
+        .mini-mode #anchor-standby {
+            transform: scale(0.5);
+            flex-direction: row;
+            gap: 15px;
+        }
+        .mini-mode .anchor-info {
+            position: absolute;
+            top: 10px;
+            right: 120px;
+            font-size: 12px;
+            padding: 4px 8px;
+            background: rgba(24, 24, 27, 0.8);
+            border-radius: 6px;
+            border: 1px solid rgba(234, 179, 8, 0.3);
+            color: var(--color-yellow);
+            font-weight: bold;
+            z-index: 100;
+        }
+        .mini-mode .exit-btn {
+            top: 10px;
+            left: 10px;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        .exit-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            font-family: ui-sans-serif;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: rgba(24, 24, 27, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .exit-btn:hover {
+            color: var(--color-green);
+            border-color: var(--color-green);
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+        }
+        .anchor-info {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-family: monospace;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: bold;
+            background: rgba(24, 24, 27, 0.8);
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        #anchor-standby {
+            opacity: 0.3;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        #anchor-standby svg {
+            width: 80px;
+            height: 80px;
+            stroke: var(--color-green);
+            filter: drop-shadow(0 0 20px var(--color-green));
+            animation: pulse 3s infinite;
+        }
+        #anchor-standby div {
+            font-size: 28px;
+            color: var(--color-green);
+            margin-top: 20px;
+            letter-spacing: 4px;
+            font-family: ui-sans-serif;
+            text-shadow: 0 0 10px var(--color-green);
+        }
+        #anchor-flash {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .flash {
+            animation: flash 0.8s ease-out;
+        }
+        @keyframes flash {
+            0% { box-shadow: inset 0 0 0 0 transparent; }
+            50% { box-shadow: inset 0 0 100px 50px rgba(234, 179, 8, 0.3); }
+            100% { box-shadow: inset 0 0 0 0 transparent; }
+        }
+        .mini-mode .flash {
+            animation: border-flash 0.8s ease-out;
+            box-shadow: none;
+        }
+        @keyframes border-flash {
+            0% { border-bottom-color: transparent; }
+            50% { border-bottom-color: var(--color-yellow); background: rgba(234, 179, 8, 0.1); }
+            100% { border-bottom-color: transparent; }
+        }
+
+        /* 弹窗 */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99;
+            backdrop-filter: blur(10px);
+        }
+        .modal {
+            background: rgba(24, 24, 27, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            box-shadow: 0 0 40px rgba(34, 197, 94, 0.2);
+            backdrop-filter: blur(15px);
+        }
+        .modal::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--color-green), var(--color-blue), var(--color-green));
+            border-radius: 20px 20px 0 0;
+            animation: border-shift 5s infinite;
+        }
+        .modal h3 {
+            font-size: 24px;
+            font-weight: 900;
+            margin-bottom: 15px;
+            color: var(--text-white);
+            text-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+        }
+        .modal p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 16px;
+            margin-bottom: 30px;
+            font-family: ui-sans-serif;
+        }
+        .modal-btns {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .modal-btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+        .btn-cancel {
+            background: rgba(24, 24, 27, 0.8);
+            color: rgba(255, 255, 255, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        .btn-cancel:hover {
+            background: rgba(24, 24, 27, 0.9);
+            color: var(--text-white);
+            border-color: var(--color-blue);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+        }
+        .btn-confirm {
+            background: linear-gradient(135deg, var(--color-red), #dc2626);
+            color: white;
+        }
+        .btn-confirm:hover {
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+        }
+        .modal-btn:active {
+            transform: scale(0.98);
+        }
+        #modal-donate .modal h3 {
+            color: var(--color-yellow);
+            text-shadow: 0 0 10px rgba(234, 179, 8, 0.5);
+        }
+        #modal-donate .modal .btn-main {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="view-login" class="full-screen flex-center" style="background-image: radial-gradient(circle at center, #27272a 0%, #09090b 100%); z-index: 10;">
+        <div style="position: absolute; top: 20px; right: 20px; color: var(--color-yellow); font-size: 14px; font-weight: bold; font-family: ui-sans-serif; background: rgba(24, 24, 27, 0.8); padding: 8px 16px; border-radius: 8px; backdrop-filter: blur(10px);">CH-<span id="login-room-display">8888</span></div>
+        <div class="login-card">
+            <h1>IRON COMPASS</h1>
+            <p>V18.0 军事指挥系统</p>
+            <input type="text" id="room-input" class="room-input" placeholder="输入频段号">
+            <button class="btn-main" onclick="goToLanding()">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                启动系统
+            </button>
+        </div>
+    </div>
+
+    <div id="view-landing" class="full-screen hidden flex-center flex-col">
+        <div style="position: absolute; top: 20px; right: 20px; color: var(--color-yellow); font-size: 14px; font-weight: bold; font-family: ui-sans-serif; background: rgba(24, 24, 27, 0.8); padding: 8px 16px; border-radius: 8px; backdrop-filter: blur(10px); margin-right: 100px;">CH-<span class="room-display">8888</span></div>
+        <div style="position: absolute; top: 20px; right: 20px; cursor: pointer; color: var(--color-yellow); font-size: 14px; font-weight: bold; font-family: ui-sans-serif; background: rgba(24, 24, 27, 0.8); padding: 8px 16px; border-radius: 8px; backdrop-filter: blur(10px); transition: all 0.3s ease;" onclick="showDonate()" onmouseover="this.style.color='var(--color-green)'; this.style.boxShadow='0 0 10px rgba(34, 197, 94, 0.3)';" onmouseout="this.style.color='var(--color-yellow)'; this.style.boxShadow='none';">支持作者</div>
+        <h2>选择作战位置</h2>
+        <div class="role-container">
+            <div class="role-card" onclick="startOps()">
+                <svg class="icon" style="width: 60px; height: 60px; stroke: var(--color-green);" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                <h3>运营中控</h3>
+            </div>
+            <div class="role-card" onclick="startAnchor()">
+                <svg class="icon" style="width: 60px; height: 60px; stroke: var(--color-yellow);" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                <h3>主播屏幕</h3>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-ops" class="full-screen hidden ops-layout">
+        <div class="ops-header">
+            <div onclick="backToLanding()">← 退出系统</div>
+            <div>CH-<span class="room-display"></span></div>
+            <div id="save-indicator" class="save-status saved">✔ 已保存</div>
+        </div>
+        <div id="grid-container" class="grid-container"></div>
+        <div class="action-bar">
+            <button class="btn-action btn-add" onclick="addNewButton()">
+                <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                添加指令
+            </button>
+            <button class="btn-action" onclick="sendClear()">
+                <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                清屏指令
+            </button>
+        </div>
+    </div>
+
+    <div id="view-anchor" class="full-screen hidden anchor-view">
+        <div class="exit-btn" onclick="backToLanding()">EXIT</div>
+        <div class="anchor-info">CH-<span class="room-display"></span></div>
+        <div id="anchor-standby" style="opacity: 0.3; text-align: center; display: flex; flex-direction: column; align-items: center;">
+            <svg class="icon" style="width: 80px; height: 80px; stroke: var(--color-green);" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+            <div style="font-size: 28px; color: var(--color-green); margin-top: 20px; letter-spacing: 4px; font-family: ui-sans-serif;">等待指令...</div>
+        </div>
+        <div id="anchor-content" class="anchor-text hidden"></div>
+        <div id="anchor-flash" class="full-screen" style="pointer-events: none;"></div>
+    </div>
+
+    <div id="modal-donate" class="modal-overlay hidden">
+        <div class="modal">
+            <div style="position: absolute; top: 20px; right: 20px; cursor: pointer; font-size: 24px; color: rgba(255, 255, 255, 0.6); transition: all 0.3s ease;" onclick="closeDonate()" onmouseover="this.style.color='var(--color-red)';" onmouseout="this.style.color='rgba(255, 255, 255, 0.6)';">✕</div>
+            <h3>给老代加个鸡腿</h3>
+            <div style="width: 200px; height: 200px; background: rgba(24, 24, 27, 0.8); margin: 0 auto 30px; border: 2px dashed rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: center; border-radius: 12px;">
+                <span style="color: rgba(255, 255, 255, 0.4); font-size: 14px; font-family: ui-sans-serif;">请替换收款码图片</span>
+            </div>
+            <button class="btn-main" onclick="closeDonate()">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M9 16 4 11l1.41-1.41L9 13.17 19.59 2.58 21 4l-11 11z"></path></svg>
+                下次一定
+            </button>
+        </div>
+    </div>
+
+    <div id="modal-delete" class="modal-overlay hidden">
+        <div class="modal">
+            <h3 style="color: var(--color-red);">确认删除？</h3>
+            <p>删除后无法恢复，确定移除吗？</p>
+            <div class="modal-btns">
+                <button class="modal-btn btn-cancel" onclick="cancelDelete()">取消</button>
+                <button class="modal-btn btn-confirm" onclick="confirmDelete()">删除</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-channel" class="modal-overlay hidden">
+        <div class="modal">
+            <h3 style="color: var(--color-green);">频道已连接</h3>
+            <p style="font-size: 18px; color: var(--text-white); margin-bottom: 20px;">将频道码，记住并告知你的团队</p>
+            <div style="font-size: 48px; font-weight: 900; color: var(--color-yellow); text-shadow: 0 0 20px rgba(234, 179, 8, 0.5); margin-bottom: 30px; letter-spacing: 4px;" id="channel-code-display">8888</div>
+            <button class="btn-main" onclick="closeChannelModal()">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M9 16 4 11l1.41-1.41L9 13.17 19.59 2.58 21 4l-11 11z"></path></svg>
+                我已记住
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let currentRoom = '8888';
+        let channel = null;
+        let pendingDeleteIndex = null;
+
+        // 页面加载时恢复状态
+        window.addEventListener('load', function() {
+            const savedRoom = localStorage.getItem('iron_compass_current_room');
+            const savedView = localStorage.getItem('iron_compass_current_view');
+            
+            if (savedRoom) {
+                currentRoom = savedRoom;
+                document.querySelectorAll('.room-display').forEach(el => el.innerText = savedRoom);
+                document.getElementById('login-room-display').innerText = savedRoom;
+                
+                // 初始化频道
+                channel = new BroadcastChannel('iron_compass_' + savedRoom);
+                channel.onmessage = (e) => {
+                    if(e.data.type === 'MSG') updateAnchor(e.data.text);
+                    if(e.data.type === 'CLEAR') clearAnchor();
+                };
+            }
+            
+            if (savedView) {
+                showView(savedView);
+            }
+        });
+
+        const DEFAULT_BUTTONS = [
+            { id: 1, label: '流量爆发', text: '炸福利', color: 'bg-red' },
+            { id: 2, label: '冷场激活', text: '扣1送礼', color: 'bg-yellow' },
+            { id: 3, label: '库存预警', text: '只剩五单', color: 'bg-green' },
+            { id: 4, label: '逼单时刻', text: '最后三十秒', color: 'bg-blue' }
+        ];
+        let buttons = [];
+        document.getElementById('room-input').value = Math.floor(1000 + Math.random() * 9000);
+
+        function loadButtons() {
+            const saved = localStorage.getItem('iron_compass_buttons_v5_' + currentRoom);
+            buttons = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_BUTTONS));
+            renderButtons();
+        }
+        function saveButtons() { 
+            localStorage.setItem('iron_compass_buttons_v5_' + currentRoom, JSON.stringify(buttons)); 
+            setSaveStatus(true);
+        }
+
+        function setSaveStatus(saved) {
+            const el = document.getElementById('save-indicator');
+            if (saved) {
+                el.innerText = '✔ 已保存';
+                el.className = 'save-status saved';
+            } else {
+                el.innerText = '● 编辑中...';
+                el.className = 'save-status unsaved';
+            }
+        }
+
+        function renderButtons() {
+            const container = document.getElementById('grid-container');
+            container.innerHTML = '';
+            buttons.forEach((btn, index) => {
+                const div = document.createElement('div');
+                div.className = `deck-btn ${btn.color}`;
+                div.innerHTML = `
+                    <div class="deck-tools">
+                        <div class="tool-icon" onclick="changeColor(${index})"><svg class="icon" viewBox="0 0 24 24"><path d="M14.6 16.6l4.6-4.6-4.6-4.6L16 3l6 6-6 6-1.4-1.4zm-5.2 0L4.8 12l4.6-4.6L8 3 2 9l6 6 1.4-1.4z"></path></svg></div>
+                        <div class="tool-icon tool-delete" onclick="requestDelete(${index})"><svg class="icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg></div>
+                    </div>
+                    <input type="text" class="deck-title-input" value="${btn.label}" oninput="handleLabelInput(${index}, this.value)" onblur="saveButtons()">
+                    <input type="text" class="deck-main-input" value="${btn.text}" maxlength="10" placeholder="限10字" oninput="handleTextInput(${index}, this.value)" onblur="saveButtons()">
+                    <div class="char-counter" id="cnt-${index}">${btn.text.length}/10</div>
+                    <div class="deck-send" onclick="sendMsgFromIndex(${index})"><svg class="icon" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg> 发送指令</div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function handleLabelInput(i, v) { buttons[i].label = v; setSaveStatus(false); }
+        function handleTextInput(i, v) { buttons[i].text = v; document.getElementById(`cnt-${i}`).innerText = `${v.length}/10`; setSaveStatus(false); }
+        function sendMsgFromIndex(i) { sendMsg(buttons[i].text); }
+
+        function addNewButton() { 
+            buttons.push({ id: Date.now(), label: '新指令', text: '...', color: 'bg-green' }); 
+            saveButtons(); 
+            renderButtons(); 
+            setTimeout(() => document.getElementById('grid-container').scrollTop = 9999, 100); 
+        }
+        function requestDelete(i) { 
+            pendingDeleteIndex = i; 
+            document.getElementById('modal-delete').classList.remove('hidden'); 
+        }
+        function confirmDelete() { 
+            if(pendingDeleteIndex!==null) buttons.splice(pendingDeleteIndex, 1); 
+            saveButtons(); 
+            renderButtons(); 
+            cancelDelete(); 
+        }
+        function cancelDelete() { 
+            pendingDeleteIndex = null; 
+            document.getElementById('modal-delete').classList.add('hidden'); 
+        }
+        function changeColor(i) { 
+            const c = ['bg-red', 'bg-yellow', 'bg-green', 'bg-blue']; 
+            buttons[i].color = c[(c.indexOf(buttons[i].color) + 1) % 4]; 
+            saveButtons(); 
+            renderButtons(); 
+        }
+
+        function showView(id) { 
+            document.querySelectorAll('.full-screen').forEach(el => el.classList.add('hidden')); 
+            document.getElementById(id).classList.remove('hidden'); 
+            // 保存当前视图状态
+            localStorage.setItem('iron_compass_current_view', id);
+        }
+        function goToLanding() {
+            const val = document.getElementById('room-input').value; 
+            if(!val) return alert('请输入频段号'); 
+            currentRoom = val; 
+            // 保存当前房间号
+            localStorage.setItem('iron_compass_current_room', val);
+            document.querySelectorAll('.room-display').forEach(el => el.innerText = val);
+            document.getElementById('login-room-display').innerText = val;
+            if(channel) channel.close(); 
+            channel = new BroadcastChannel('iron_compass_' + val);
+            channel.onmessage = (e) => { 
+                if(e.data.type === 'MSG') updateAnchor(e.data.text); 
+                if(e.data.type === 'CLEAR') clearAnchor(); 
+            };
+            showView('view-landing');
+            showChannelModal();
+        }
+        function backToLanding() { showView('view-landing'); }
+        function startOps() { loadButtons(); showView('view-ops'); }
+        function startAnchor() { showView('view-anchor'); }
+        function sendMsg(t) { if(channel) channel.postMessage({ type: 'MSG', text: t }); }
+        function sendClear() { if(channel) channel.postMessage({ type: 'CLEAR' }); }
+
+        function updateAnchor(text) {
+            document.getElementById('anchor-standby').classList.add('hidden');
+            const c = document.getElementById('anchor-content'); 
+            c.classList.remove('hidden');
+            c.innerText = text;
+            c.classList.remove('short-text');
+            
+            const f = document.getElementById('anchor-flash'); 
+            f.classList.add('flash'); 
+            setTimeout(() => f.classList.remove('flash'), 800);
+        }
+
+        function clearAnchor() { 
+            document.getElementById('anchor-standby').classList.remove('hidden'); 
+            document.getElementById('anchor-content').classList.add('hidden'); 
+        }
+        function showDonate() { document.getElementById('modal-donate').classList.remove('hidden'); }
+        function closeDonate() { document.getElementById('modal-donate').classList.add('hidden'); }
+        function showChannelModal() { 
+            document.getElementById('channel-code-display').innerText = currentRoom;
+            document.getElementById('modal-channel').classList.remove('hidden'); 
+        }
+        function closeChannelModal() { document.getElementById('modal-channel').classList.add('hidden'); }
+    </script>
+</body>
+</html>
