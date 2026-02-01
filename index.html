@@ -747,7 +747,8 @@
     </div>
 
     <div id="view-landing" class="full-screen hidden flex-center flex-col">
-        <div style="position: absolute; top: 20px; right: 20px; color: var(--color-yellow); font-size: 14px; font-weight: bold; font-family: ui-sans-serif; background: rgba(24, 24, 27, 0.8); padding: 8px 16px; border-radius: 8px; backdrop-filter: blur(10px); margin-right: 100px;">CH-<span class="room-display">8888</span></div>
+        <div style="position: absolute; top: 20px; right: 300px; color: var(--color-yellow); font-size: 14px; font-weight: bold; font-family: ui-sans-serif; background: rgba(24, 24, 27, 0.8); padding: 8px 16px; border-radius: 8px; backdrop-filter: blur(10px);">CH-<span class="room-display">8888</span></div>
+        <div style="position: absolute; top: 20px; right: 160px; cursor: pointer; color: var(--color-yellow); font-size: 14px; font-weight: bold; font-family: ui-sans-serif; background: rgba(24, 24, 27, 0.8); padding: 8px 16px; border-radius: 8px; backdrop-filter: blur(10px); transition: all 0.3s ease;" onclick="showChangeChannelModal()" onmouseover="this.style.color='var(--color-blue)'; this.style.boxShadow='0 0 10px rgba(59, 130, 246, 0.3)';" onmouseout="this.style.color='var(--color-yellow)'; this.style.boxShadow='none';">切换频道</div>
         <div style="position: absolute; top: 20px; right: 20px; cursor: pointer; color: var(--color-yellow); font-size: 14px; font-weight: bold; font-family: ui-sans-serif; background: rgba(24, 24, 27, 0.8); padding: 8px 16px; border-radius: 8px; backdrop-filter: blur(10px); transition: all 0.3s ease;" onclick="showDonate()" onmouseover="this.style.color='var(--color-green)'; this.style.boxShadow='0 0 10px rgba(34, 197, 94, 0.3)';" onmouseout="this.style.color='var(--color-yellow)'; this.style.boxShadow='none';">支持作者</div>
 
         <div class="role-container">
@@ -766,7 +767,11 @@
         <div class="ops-header">
             <div onclick="backToLanding()">← 退出系统</div>
             <div>CH-<span class="room-display"></span></div>
-            <div id="save-indicator" class="save-status saved">✔ 已保存</div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div id="save-indicator" class="save-status saved">✔ 已保存</div>
+                <div style="cursor: pointer; color: var(--color-blue); font-weight: bold; transition: all 0.2s ease;" onclick="showChangeChannelModal()" onmouseover="this.style.textShadow='0 0 5px var(--color-blue)';" onmouseout="this.style.textShadow='none';">切换频道</div>
+                <div style="cursor: pointer; color: var(--color-red); font-weight: bold; transition: all 0.2s ease;" onclick="exitChannel()" onmouseover="this.style.textShadow='0 0 5px var(--color-red)';" onmouseout="this.style.textShadow='none';">退出频道</div>
+            </div>
         </div>
         <div id="grid-container" class="grid-container"></div>
         <div class="action-bar">
@@ -783,6 +788,8 @@
 
     <div id="view-anchor" class="full-screen hidden anchor-view">
         <div class="exit-btn" onclick="backToLanding()">EXIT</div>
+        <div style="position: absolute; top: 20px; left: 100px; font-weight: bold; color: rgba(255, 255, 255, 0.6); cursor: pointer; font-family: ui-sans-serif; transition: all 0.3s ease; padding: 8px 16px; border-radius: 8px; background: rgba(24, 24, 27, 0.8); border: 1px solid rgba(255, 255, 255, 0.1);" onclick="showChangeChannelModal()" onmouseover="this.style.color='var(--color-blue)'; this.style.borderColor='var(--color-blue)'; this.style.boxShadow='0 0 15px rgba(59, 130, 246, 0.3);'" onmouseout="this.style.color='rgba(255, 255, 255, 0.6)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.boxShadow='none';">切换频道</div>
+        <div style="position: absolute; top: 20px; left: 220px; font-weight: bold; color: rgba(255, 255, 255, 0.6); cursor: pointer; font-family: ui-sans-serif; transition: all 0.3s ease; padding: 8px 16px; border-radius: 8px; background: rgba(24, 24, 27, 0.8); border: 1px solid rgba(255, 255, 255, 0.1);" onclick="exitChannel()" onmouseover="this.style.color='var(--color-red)'; this.style.borderColor='var(--color-red)'; this.style.boxShadow='0 0 15px rgba(239, 68, 68, 0.3);'" onmouseout="this.style.color='rgba(255, 255, 255, 0.6)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.boxShadow='none';">退出频道</div>
         <div class="anchor-info">CH-<span class="room-display"></span></div>
         <div id="anchor-standby" style="opacity: 0.3; text-align: center; display: flex; flex-direction: column; align-items: center;">
             <svg class="icon" style="width: 80px; height: 80px; stroke: var(--color-green);" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
@@ -817,6 +824,18 @@
         </div>
     </div>
 
+    <div id="modal-change-channel" class="modal-overlay hidden">
+        <div class="modal">
+            <h3 style="color: var(--color-blue);">切换频道</h3>
+            <p>输入新的频道号以切换到其他频道</p>
+            <input type="text" id="new-channel-input" class="room-input" placeholder="输入频道号" style="margin-bottom: 30px;">
+            <div class="modal-btns">
+                <button class="modal-btn btn-cancel" onclick="cancelChangeChannel()">取消</button>
+                <button class="modal-btn btn-confirm" onclick="confirmChangeChannel()">切换</button>
+            </div>
+        </div>
+    </div>
+
     <div id="modal-channel" class="modal-overlay hidden">
         <div class="modal">
             <h3 style="color: var(--color-green);">频道已连接</h3>
@@ -833,11 +852,19 @@
         let currentRoom = '8888';
         let channel = null;
         let pendingDeleteIndex = null;
+        
+        // 页面跳转函数
+        function startOps() { window.location.href = 'ops.html'; }
+        function startAnchor() { window.location.href = 'anchor.html'; }
 
         // 页面加载时恢复状态
         window.addEventListener('load', function() {
             const savedRoom = localStorage.getItem('iron_compass_current_room');
             const savedView = localStorage.getItem('iron_compass_current_view');
+            
+            // 生成随机频道号
+            const randomRoom = Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('room-input').value = randomRoom;
             
             if (savedRoom) {
                 currentRoom = savedRoom;
@@ -851,8 +878,7 @@
                     if(e.data.type === 'CLEAR') clearAnchor();
                 };
                 
-                // 显示频道弹窗
-                showChannelModal();
+                // 不再自动显示频道弹窗，只在用户手动设置新频道时显示
             }
             
             if (savedView) {
@@ -869,7 +895,6 @@
             { id: 4, label: '逼单时刻', text: '最后三十秒', color: 'bg-blue' }
         ];
         let buttons = [];
-        document.getElementById('room-input').value = Math.floor(1000 + Math.random() * 9000);
 
         function loadButtons() {
             const saved = localStorage.getItem('iron_compass_buttons_v5_' + currentRoom);
@@ -968,8 +993,6 @@
             showChannelModal();
         }
         function backToLanding() { showView('view-landing'); }
-        function startOps() { window.location.href = 'ops.html'; }
-        function startAnchor() { window.location.href = 'anchor.html'; }
         function sendMsg(t) { if(channel) channel.postMessage({ type: 'MSG', text: t }); }
         function sendClear() { if(channel) channel.postMessage({ type: 'CLEAR' }); }
 
@@ -994,6 +1017,69 @@
         function showChannelModal() { 
             document.getElementById('channel-code-display').innerText = currentRoom;
             document.getElementById('modal-channel').classList.remove('hidden'); 
+        }
+
+        // 切换频道相关函数
+        function showChangeChannelModal() {
+            document.getElementById('modal-change-channel').classList.remove('hidden');
+        }
+        function cancelChangeChannel() {
+            document.getElementById('modal-change-channel').classList.add('hidden');
+        }
+        function confirmChangeChannel() {
+            const newChannel = document.getElementById('new-channel-input').value;
+            if (!newChannel) return alert('请输入频道号');
+            
+            // 关闭当前频道
+            if (channel) {
+                channel.close();
+            }
+            
+            // 保存新频道号
+            currentRoom = newChannel;
+            localStorage.setItem('iron_compass_current_room', newChannel);
+            
+            // 更新页面上的频道号显示
+            document.querySelectorAll('.room-display').forEach(el => el.innerText = newChannel);
+            document.getElementById('login-room-display').innerText = newChannel;
+            
+            // 初始化新频道
+            channel = new BroadcastChannel('iron_compass_' + newChannel);
+            channel.onmessage = (e) => {
+                if(e.data.type === 'MSG') updateAnchor(e.data.text);
+                if(e.data.type === 'CLEAR') clearAnchor();
+            };
+            
+            // 加载新频道的按钮
+            loadButtons();
+            
+            // 关闭弹窗
+            document.getElementById('modal-change-channel').classList.add('hidden');
+        }
+        
+        // 退出频道函数
+        function exitChannel() {
+            // 关闭当前频道
+            if (channel) {
+                channel.close();
+                channel = null;
+            }
+            
+            // 清除频道号
+            currentRoom = '8888';
+            localStorage.removeItem('iron_compass_current_room');
+            localStorage.removeItem('iron_compass_current_view');
+            
+            // 为登录页面生成新的随机频道号
+            const randomRoom = Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('room-input').value = randomRoom;
+            
+            // 更新页面上的频道号显示
+            document.querySelectorAll('.room-display').forEach(el => el.innerText = '8888');
+            document.getElementById('login-room-display').innerText = '8888';
+            
+            // 跳转到登录页
+            showView('view-login');
         }
         function copyChannelCode() {
             const code = document.getElementById('channel-code-display').innerText;

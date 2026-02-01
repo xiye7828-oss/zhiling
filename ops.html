@@ -417,9 +417,13 @@
 <body>
     <div id="view-ops" class="ops-layout">
         <div class="ops-header">
-            <div onclick="window.location.href='index.html'">← 退出系统</div>
+            <div onclick="window.location.href='index.html'">← 上一步</div>
             <div>CH-<span class="room-display"></span></div>
-            <div id="save-indicator" class="save-status saved">✔ 已保存</div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div id="save-indicator" class="save-status saved">✔ 已保存</div>
+                <div style="cursor: pointer; color: var(--color-blue); font-weight: bold; transition: all 0.2s ease;" onclick="showChangeChannelModal()" onmouseover="this.style.textShadow='0 0 5px var(--color-blue)';" onmouseout="this.style.textShadow='none';">切换频道</div>
+                <div style="cursor: pointer; color: var(--color-red); font-weight: bold; transition: all 0.2s ease;" onclick="exitChannel()" onmouseover="this.style.textShadow='0 0 5px var(--color-red)';" onmouseout="this.style.textShadow='none';">退出频道</div>
+            </div>
         </div>
         <div id="grid-container" class="grid-container"></div>
         <div class="action-bar">
@@ -441,6 +445,18 @@
             <div class="modal-btns">
                 <button class="modal-btn btn-cancel" onclick="cancelDelete()">取消</button>
                 <button class="modal-btn btn-confirm" onclick="confirmDelete()">删除</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-change-channel" class="modal-overlay hidden">
+        <div class="modal">
+            <h3 style="color: var(--color-blue);">切换频道</h3>
+            <p>输入新的频道号以切换到其他频道</p>
+            <input type="text" id="new-channel-input" class="room-input" placeholder="输入频道号" style="margin-bottom: 30px;">
+            <div class="modal-btns">
+                <button class="modal-btn btn-cancel" onclick="cancelChangeChannel()">取消</button>
+                <button class="modal-btn btn-confirm" onclick="confirmChangeChannel()">切换</button>
             </div>
         </div>
     </div>
@@ -555,6 +571,39 @@
 
         function sendMsg(t) { if(channel) channel.postMessage({ type: 'MSG', text: t }); }
         function sendClear() { if(channel) channel.postMessage({ type: 'CLEAR' }); }
+
+        // 切换频道相关函数
+        function showChangeChannelModal() {
+            document.getElementById('modal-change-channel').classList.remove('hidden');
+        }
+        function cancelChangeChannel() {
+            document.getElementById('modal-change-channel').classList.add('hidden');
+        }
+        function confirmChangeChannel() {
+            const newChannel = document.getElementById('new-channel-input').value;
+            if (!newChannel) return alert('请输入频道号');
+            
+            // 保存新频道号
+            localStorage.setItem('iron_compass_current_room', newChannel);
+            
+            // 重新加载页面以应用新频道
+            window.location.reload();
+        }
+        
+        // 退出频道函数
+        function exitChannel() {
+            // 关闭当前频道
+            if (channel) {
+                channel.close();
+            }
+            
+            // 清除频道号
+            localStorage.removeItem('iron_compass_current_room');
+            localStorage.removeItem('iron_compass_current_view');
+            
+            // 跳转到登录页
+            window.location.href = 'index.html';
+        }
     </script>
 </body>
 </html>
