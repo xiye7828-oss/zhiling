@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iron Compass | 军事指挥系统</title>
+    <title>运营中控 - Iron Compass</title>
     <style>
         /* --- 核心视觉系统 --- */
         :root {
@@ -25,173 +25,6 @@
         .flex-center { display: flex; justify-content: center; align-items: center; }
         .full-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; }
         .icon { width: 20px; height: 20px; stroke-width: 2.5; stroke: currentColor; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-
-        /* --- 登录与选择页 --- */
-        .login-card {
-            background: rgba(24,24,27,0.8);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-            padding: 50px;
-            border-radius: 24px;
-            width: 90%;
-            max-width: 450px;
-            text-align: center;
-            box-shadow: 0 0 30px rgba(34, 197, 94, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-        .login-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(34, 197, 94, 0.1), transparent);
-            animation: scan 3s infinite;
-        }
-        @keyframes scan {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-        .login-card h1 {
-            font-size: 42px;
-            font-weight: 900;
-            margin-bottom: 10px;
-            font-style: italic;
-            color: var(--text-white);
-            text-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
-            letter-spacing: 2px;
-        }
-        .login-card p {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 14px;
-            margin-bottom: 30px;
-            font-family: ui-sans-serif, system-ui;
-        }
-        .room-input {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            border: 2px solid rgba(34, 197, 94, 0.3);
-            color: var(--text-white);
-            padding: 20px;
-            font-size: 28px;
-            text-align: center;
-            font-weight: bold;
-            border-radius: 16px;
-            outline: none;
-            margin-top: 10px;
-            font-family: ui-sans-serif, system-ui;
-            transition: all 0.3s ease;
-        }
-        .room-input:focus {
-            border-color: var(--color-green);
-            box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
-        }
-        .btn-main {
-            width: 100%;
-            background: linear-gradient(135deg, var(--color-green), #16a34a);
-            color: black;
-            font-weight: 900;
-            font-size: 20px;
-            padding: 20px;
-            border-radius: 16px;
-            border: none;
-            margin-top: 24px;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            align-items: center;
-            transition: all 0.2s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .btn-main:hover {
-            box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
-        }
-        .btn-main:active {
-            transform: scale(0.98);
-        }
-        .btn-main::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            animation: shine 2s infinite;
-        }
-        @keyframes shine {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        /* --- 选择页 --- */
-        #view-landing {
-            background: radial-gradient(circle at center, rgba(24, 24, 27, 0.5) 0%, var(--bg-dark) 100%);
-        }
-        #view-landing h2 {
-            font-size: 40px;
-            font-weight: 900;
-            margin-bottom: 60px;
-            color: var(--text-white);
-            text-shadow: 0 0 15px rgba(234, 179, 8, 0.5);
-            letter-spacing: 3px;
-        }
-        .role-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            width: 100%;
-            max-width: 900px;
-            padding: 20px;
-        }
-        .role-card {
-            background: rgba(24, 24, 27, 0.8);
-            border: 2px solid rgba(34, 197, 94, 0.3);
-            height: 300px;
-            border-radius: 24px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .role-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, transparent, rgba(34, 197, 94, 0.05), transparent);
-        }
-        .role-card:hover {
-            border-color: var(--color-green);
-            background: rgba(24, 24, 27, 0.9);
-            box-shadow: 0 0 30px rgba(34, 197, 94, 0.3);
-            transform: translateY(-5px);
-        }
-        .role-card:active {
-            transform: scale(0.98) translateY(-5px);
-        }
-        .role-card svg {
-            width: 60px;
-            height: 60px;
-            margin-bottom: 20px;
-            filter: drop-shadow(0 0 10px currentColor);
-        }
-        .role-card h3 {
-            font-size: 28px;
-            font-weight: 900;
-            color: var(--text-white);
-            text-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
-        }
 
         /* --- 运营控制台 --- */
         .ops-layout {
@@ -496,149 +329,6 @@
             box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
         }
 
-        /* --- 主播端 --- */
-        .anchor-view {
-            background: black;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-        .anchor-text {
-            font-weight: 900;
-            color: var(--color-yellow);
-            text-align: center;
-            line-height: 1.1;
-            white-space: pre-wrap;
-            text-shadow: 0 0 30px rgba(234, 179, 8, 0.8), 0 0 60px rgba(234, 179, 8, 0.5);
-            width: 100%;
-            padding: 0 40px;
-            word-break: break-all;
-            font-size: 14vw;
-            letter-spacing: 2px;
-        }
-        .anchor-text.short-text {
-            font-size: 33vw;
-            line-height: 1;
-        }
-        .mini-mode {
-            background: rgba(0, 0, 0, 0.95);
-            align-items: center;
-            height: 100px;
-        }
-        .mini-mode .anchor-text {
-            padding: 0 40px;
-            white-space: nowrap;
-            font-size: 60px;
-            line-height: 100px;
-        }
-        .mini-mode #anchor-standby {
-            transform: scale(0.5);
-            flex-direction: row;
-            gap: 15px;
-        }
-        .mini-mode .anchor-info {
-            position: absolute;
-            top: 10px;
-            right: 120px;
-            font-size: 12px;
-            padding: 4px 8px;
-            background: rgba(24, 24, 27, 0.8);
-            border-radius: 6px;
-            border: 1px solid rgba(234, 179, 8, 0.3);
-            color: var(--color-yellow);
-            font-weight: bold;
-            z-index: 100;
-        }
-        .mini-mode .exit-btn {
-            top: 10px;
-            left: 10px;
-            padding: 6px 12px;
-            font-size: 12px;
-        }
-        .exit-btn {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            font-weight: bold;
-            color: rgba(255, 255, 255, 0.6);
-            cursor: pointer;
-            font-family: ui-sans-serif;
-            transition: all 0.3s ease;
-            padding: 8px 16px;
-            border-radius: 8px;
-            background: rgba(24, 24, 27, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .exit-btn:hover {
-            color: var(--color-green);
-            border-color: var(--color-green);
-            box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
-        }
-        .anchor-info {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            font-family: monospace;
-            color: rgba(255, 255, 255, 0.6);
-            font-weight: bold;
-            background: rgba(24, 24, 27, 0.8);
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        #anchor-standby {
-            opacity: 0.3;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: all 0.3s ease;
-        }
-        #anchor-standby svg {
-            width: 80px;
-            height: 80px;
-            stroke: var(--color-green);
-            filter: drop-shadow(0 0 20px var(--color-green));
-            animation: pulse 3s infinite;
-        }
-        #anchor-standby div {
-            font-size: 28px;
-            color: var(--color-green);
-            margin-top: 20px;
-            letter-spacing: 4px;
-            font-family: ui-sans-serif;
-            text-shadow: 0 0 10px var(--color-green);
-        }
-        #anchor-flash {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 10;
-        }
-        .flash {
-            animation: flash 0.8s ease-out;
-        }
-        @keyframes flash {
-            0% { box-shadow: inset 0 0 0 0 transparent; }
-            50% { box-shadow: inset 0 0 100px 50px rgba(234, 179, 8, 0.3); }
-            100% { box-shadow: inset 0 0 0 0 transparent; }
-        }
-        .mini-mode .flash {
-            animation: border-flash 0.8s ease-out;
-            box-shadow: none;
-        }
-        @keyframes border-flash {
-            0% { border-bottom-color: transparent; }
-            50% { border-bottom-color: var(--color-yellow); background: rgba(234, 179, 8, 0.1); }
-            100% { border-bottom-color: transparent; }
-        }
-
         /* 弹窗 */
         .modal-overlay {
             position: fixed;
@@ -722,49 +412,12 @@
         .modal-btn:active {
             transform: scale(0.98);
         }
-        #modal-donate .modal h3 {
-            color: var(--color-yellow);
-            text-shadow: 0 0 10px rgba(234, 179, 8, 0.5);
-        }
-        #modal-donate .modal .btn-main {
-            margin-top: 30px;
-        }
     </style>
 </head>
 <body>
-
-    <div id="view-login" class="full-screen flex-center" style="background-image: radial-gradient(circle at center, #27272a 0%, #09090b 100%); z-index: 10;">
-        <div style="position: absolute; top: 20px; right: 20px; color: var(--color-yellow); font-size: 14px; font-weight: bold; font-family: ui-sans-serif; background: rgba(24, 24, 27, 0.8); padding: 8px 16px; border-radius: 8px; backdrop-filter: blur(10px);">CH-<span id="login-room-display">8888</span></div>
-        <div class="login-card">
-            <h1>熹在野</h1>
-            <p>V18.0 军事指挥系统</p>
-            <input type="text" id="room-input" class="room-input" placeholder="输入频段号">
-            <button class="btn-main" onclick="goToLanding()">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-                启动系统
-            </button>
-        </div>
-    </div>
-
-    <div id="view-landing" class="full-screen hidden flex-center flex-col">
-        <div style="position: absolute; top: 20px; right: 20px; color: var(--color-yellow); font-size: 14px; font-weight: bold; font-family: ui-sans-serif; background: rgba(24, 24, 27, 0.8); padding: 8px 16px; border-radius: 8px; backdrop-filter: blur(10px); margin-right: 100px;">CH-<span class="room-display">8888</span></div>
-        <div style="position: absolute; top: 20px; right: 20px; cursor: pointer; color: var(--color-yellow); font-size: 14px; font-weight: bold; font-family: ui-sans-serif; background: rgba(24, 24, 27, 0.8); padding: 8px 16px; border-radius: 8px; backdrop-filter: blur(10px); transition: all 0.3s ease;" onclick="showDonate()" onmouseover="this.style.color='var(--color-green)'; this.style.boxShadow='0 0 10px rgba(34, 197, 94, 0.3)';" onmouseout="this.style.color='var(--color-yellow)'; this.style.boxShadow='none';">支持作者</div>
-        <h2>选择作战位置</h2>
-        <div class="role-container">
-            <div class="role-card" onclick="startOps()">
-                <svg class="icon" style="width: 60px; height: 60px; stroke: var(--color-green);" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
-                <h3>运营中控</h3>
-            </div>
-            <div class="role-card" onclick="startAnchor()">
-                <svg class="icon" style="width: 60px; height: 60px; stroke: var(--color-yellow);" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
-                <h3>主播屏幕</h3>
-            </div>
-        </div>
-    </div>
-
-    <div id="view-ops" class="full-screen hidden ops-layout">
+    <div id="view-ops" class="ops-layout">
         <div class="ops-header">
-            <div onclick="backToLanding()">← 退出系统</div>
+            <div onclick="window.location.href='index.html'">← 退出系统</div>
             <div>CH-<span class="room-display"></span></div>
             <div id="save-indicator" class="save-status saved">✔ 已保存</div>
         </div>
@@ -781,31 +434,6 @@
         </div>
     </div>
 
-    <div id="view-anchor" class="full-screen hidden anchor-view">
-        <div class="exit-btn" onclick="backToLanding()">EXIT</div>
-        <div class="anchor-info">CH-<span class="room-display"></span></div>
-        <div id="anchor-standby" style="opacity: 0.3; text-align: center; display: flex; flex-direction: column; align-items: center;">
-            <svg class="icon" style="width: 80px; height: 80px; stroke: var(--color-green);" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
-            <div style="font-size: 28px; color: var(--color-green); margin-top: 20px; letter-spacing: 4px; font-family: ui-sans-serif;">等待指令...</div>
-        </div>
-        <div id="anchor-content" class="anchor-text hidden"></div>
-        <div id="anchor-flash" class="full-screen" style="pointer-events: none;"></div>
-    </div>
-
-    <div id="modal-donate" class="modal-overlay hidden">
-        <div class="modal">
-            <div style="position: absolute; top: 20px; right: 20px; cursor: pointer; font-size: 24px; color: rgba(255, 255, 255, 0.6); transition: all 0.3s ease;" onclick="closeDonate()" onmouseover="this.style.color='var(--color-red)';" onmouseout="this.style.color='rgba(255, 255, 255, 0.6)';">✕</div>
-            <h3>给老代加个鸡腿</h3>
-            <div style="width: 200px; height: 200px; background: rgba(24, 24, 27, 0.8); margin: 0 auto 30px; border: 2px dashed rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: center; border-radius: 12px;">
-                <span style="color: rgba(255, 255, 255, 0.4); font-size: 14px; font-family: ui-sans-serif;">请替换收款码图片</span>
-            </div>
-            <button class="btn-main" onclick="closeDonate()">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M9 16 4 11l1.41-1.41L9 13.17 19.59 2.58 21 4l-11 11z"></path></svg>
-                下次一定
-            </button>
-        </div>
-    </div>
-
     <div id="modal-delete" class="modal-overlay hidden">
         <div class="modal">
             <h3 style="color: var(--color-red);">确认删除？</h3>
@@ -817,49 +445,32 @@
         </div>
     </div>
 
-    <div id="modal-channel" class="modal-overlay hidden">
-        <div class="modal">
-            <h3 style="color: var(--color-green);">频道已连接</h3>
-            <p style="font-size: 18px; color: var(--text-white); margin-bottom: 20px;">将频道码，记住并告知你的团队</p>
-            <div style="font-size: 48px; font-weight: 900; color: var(--color-yellow); text-shadow: 0 0 20px rgba(234, 179, 8, 0.5); margin-bottom: 30px; letter-spacing: 4px;" id="channel-code-display">8888</div>
-            <button class="btn-main" onclick="copyChannelCode()">
-                <svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                点击复制
-            </button>
-        </div>
-    </div>
-
     <script>
         let currentRoom = '8888';
         let channel = null;
         let pendingDeleteIndex = null;
 
-        // 页面加载时恢复状态
+        // 页面加载时初始化
         window.addEventListener('load', function() {
             const savedRoom = localStorage.getItem('iron_compass_current_room');
-            const savedView = localStorage.getItem('iron_compass_current_view');
             
             if (savedRoom) {
                 currentRoom = savedRoom;
                 document.querySelectorAll('.room-display').forEach(el => el.innerText = savedRoom);
-                document.getElementById('login-room-display').innerText = savedRoom;
                 
                 // 初始化频道
                 channel = new BroadcastChannel('iron_compass_' + savedRoom);
                 channel.onmessage = (e) => {
-                    if(e.data.type === 'MSG') updateAnchor(e.data.text);
-                    if(e.data.type === 'CLEAR') clearAnchor();
+                    if(e.data.type === 'MSG') console.log('收到消息:', e.data.text);
+                    if(e.data.type === 'CLEAR') console.log('收到清屏指令');
                 };
-                
-                // 显示频道弹窗
-                showChannelModal();
+            } else {
+                // 如果没有保存的房间号，跳转到登录页
+                window.location.href = 'index.html';
             }
             
-            if (savedView) {
-                showView(savedView);
-            } else if (savedRoom) {
-                showView('view-landing');
-            }
+            // 加载按钮
+            loadButtons();
         });
 
         const DEFAULT_BUTTONS = [
@@ -869,7 +480,6 @@
             { id: 4, label: '逼单时刻', text: '最后三十秒', color: 'bg-blue' }
         ];
         let buttons = [];
-        document.getElementById('room-input').value = Math.floor(1000 + Math.random() * 9000);
 
         function loadButtons() {
             const saved = localStorage.getItem('iron_compass_buttons_v5_' + currentRoom);
@@ -943,79 +553,8 @@
             renderButtons(); 
         }
 
-        function showView(id) { 
-            // 只隐藏视图元素，不隐藏弹窗元素
-            document.querySelectorAll('.full-screen:not(.modal-overlay)').forEach(el => el.classList.add('hidden')); 
-            document.getElementById(id).classList.remove('hidden'); 
-            // 保存当前视图状态
-            localStorage.setItem('iron_compass_current_view', id);
-        }
-        function goToLanding() {
-            const val = document.getElementById('room-input').value; 
-            if(!val) return alert('请输入频段号'); 
-            currentRoom = val; 
-            // 保存当前房间号
-            localStorage.setItem('iron_compass_current_room', val);
-            document.querySelectorAll('.room-display').forEach(el => el.innerText = val);
-            document.getElementById('login-room-display').innerText = val;
-            if(channel) channel.close(); 
-            channel = new BroadcastChannel('iron_compass_' + val);
-            channel.onmessage = (e) => { 
-                if(e.data.type === 'MSG') updateAnchor(e.data.text); 
-                if(e.data.type === 'CLEAR') clearAnchor(); 
-            };
-            showView('view-landing');
-            showChannelModal();
-        }
-        function backToLanding() { showView('view-landing'); }
-        function startOps() { window.location.href = 'ops.html'; }
-        function startAnchor() { window.location.href = 'anchor.html'; }
         function sendMsg(t) { if(channel) channel.postMessage({ type: 'MSG', text: t }); }
         function sendClear() { if(channel) channel.postMessage({ type: 'CLEAR' }); }
-
-        function updateAnchor(text) {
-            document.getElementById('anchor-standby').classList.add('hidden');
-            const c = document.getElementById('anchor-content'); 
-            c.classList.remove('hidden');
-            c.innerText = text;
-            c.classList.remove('short-text');
-            
-            const f = document.getElementById('anchor-flash'); 
-            f.classList.add('flash'); 
-            setTimeout(() => f.classList.remove('flash'), 800);
-        }
-
-        function clearAnchor() { 
-            document.getElementById('anchor-standby').classList.remove('hidden'); 
-            document.getElementById('anchor-content').classList.add('hidden'); 
-        }
-        function showDonate() { document.getElementById('modal-donate').classList.remove('hidden'); }
-        function closeDonate() { document.getElementById('modal-donate').classList.add('hidden'); }
-        function showChannelModal() { 
-            document.getElementById('channel-code-display').innerText = currentRoom;
-            document.getElementById('modal-channel').classList.remove('hidden'); 
-        }
-        function copyChannelCode() {
-            const code = document.getElementById('channel-code-display').innerText;
-            navigator.clipboard.writeText(code).then(() => {
-                // 显示复制成功提示
-                const btn = document.querySelector('#modal-channel .btn-main');
-                const originalText = btn.innerHTML;
-                btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M9 16 4 11l1.41-1.41L9 13.17 19.59 2.58 21 4l-11 11z"></path></svg> 复制成功！';
-                btn.style.background = 'linear-gradient(135deg, var(--color-green), #16a34a)';
-                
-                // 2秒后恢复原样并关闭弹窗
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
-                    btn.style.background = '';
-                    closeChannelModal();
-                }, 1000);
-            }).catch(err => {
-                console.error('复制失败:', err);
-                closeChannelModal();
-            });
-        }
-        function closeChannelModal() { document.getElementById('modal-channel').classList.add('hidden'); }
     </script>
 </body>
 </html>
